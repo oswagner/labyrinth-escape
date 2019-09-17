@@ -1,0 +1,28 @@
+{
+  "name": "labyrinth-escape",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "le": "node ./dist/index.js",
+    "ble": "npm run build && npm run le" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oswagner/labyrinth-escape.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oswagner/labyrinth-escape/issues"
+  },
+  "homepage": "https://github.com/oswagner/labyrinth-escape#readme",
+  "dependencies": {
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.5"
+  }
+}
