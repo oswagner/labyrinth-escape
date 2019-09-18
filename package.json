@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "le": "node ./dist/index.js",
+    "ble": "npm run build && npm run le"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oswagner/labyrinth-escape.git"
