@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as readline from 'readline';
 
 interface Coordinate {
     x: number;
@@ -15,47 +14,52 @@ interface Labyrinth {
 
 export class LabyrinthLoader {
 
-    static load (path:string) {
+    static load(path: string): Labyrinth {
 
-        let reader = readline.createInterface({
-            input: fs.createReadStream(path),
-            output: process.stdout
-        });
+        let lines = fs.readFileSync(path, 'utf-8').toLowerCase().split('\n');
 
         let map: number[][] = [];
         let x = 0;
-        let y = 0;
+        let y = -1;
         let floorSpaces = 0;
-        let entry: Coordinate = {x:0, y:0};
-        let exit: Coordinate = {x:0, y:0}; 
+        let entry: Coordinate = { x: 0, y: 0 };
+        let exit: Coordinate = { x: 0, y: 0 };
 
-        reader.on("line", (line) => {
-            if (y == 0) {
+
+        lines.forEach((line) => {
+            if (y < 0) {
                 // Inicializa a matriz do mapa
-               for (let i = 0; i < +line; i++) 
-                    map[i] = [];
+                for (let i = 0; i < +line; i++)
+                    map.push([]);
             } else {
                 let lineArray = line.split(" ");
+                x = 0;
                 lineArray.forEach(value => {
-                    if (value == 'E') {
-                        entry = {x, y};
+                    
+                    if (value == 'e') {
+                        entry = { x, y };
                         value = '0';
                     }
-                    if (value == 'S') {
-                        exit = {x, y};
+
+                    if (value == 's') {
+                        exit = { x, y };
                         value = '0';
                     }
-                    if (value == '0') floorSpaces++;
-                    map[x][y] = +value;
+
+                    if (value == '0') 
+                        floorSpaces++;
+
+                    if (value == '0' || value == '1')
+                        map[x][y] = +value;
+
                     x++;
                 });
             }
+            y++;
         });
 
-        let lab:Labyrinth = {map, entry, exit, floorSpaces};
-
+        let lab: Labyrinth = { map, entry, exit, floorSpaces };
         return lab;
-
     }
 
 }
