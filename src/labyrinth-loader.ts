@@ -50,7 +50,7 @@ export class LabyrinthLoader {
                         floorSpaces++;
 
                     if (value == '0' || value == '1')
-                        map[x][y] = +value;
+                        map[y][x] = +value;
 
                     x++;
                 });
