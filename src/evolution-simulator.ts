@@ -24,8 +24,7 @@ export class EvolutionSimulator {
     constructor(initialPopulation: number, mutationChance: number, labyrinth: Labyrinth) {
         this.initialPopulation = initialPopulation;
         this.mutationChance = mutationChance;
-        this.genesCount = labyrinth.floorSpaces;        
+        this.genesCount = labyrinth.floorSpaces;
         this.labyrinth = labyrinth;
     }
-
 }

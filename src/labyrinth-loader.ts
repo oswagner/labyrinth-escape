@@ -5,7 +5,7 @@ interface Coordinate {
     y: number;
 }
 
-interface Labyrinth {
+export interface Labyrinth {
     map: number[][];
     entry: Coordinate;
     exit: Coordinate;
@@ -35,7 +35,7 @@ export class LabyrinthLoader {
                 let lineArray = line.split(" ");
                 x = 0;
                 lineArray.forEach(value => {
-                    
+
                     if (value == 'e') {
                         entry = { x, y };
                         value = '0';
@@ -46,7 +46,7 @@ export class LabyrinthLoader {
                         value = '0';
                     }
 
-                    if (value == '0') 
+                    if (value == '0')
                         floorSpaces++;
 
                     if (value == '0' || value == '1')
