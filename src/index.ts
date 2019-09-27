@@ -5,5 +5,6 @@ let lab = LabyrinthLoader.load("./data/labirinto2_10.txt");
 
 console.log(lab);
 
-let sim = new EvolutionSimulator(2, 0.1, lab);
+let sim = new EvolutionSimulator(10, 0.1, lab, 2);
+sim.run();
 

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-interface Coordinate {
+export interface Coordinate {
     x: number;
     y: number;
 }
