@@ -28,13 +28,11 @@ export class EvolutionSimulator {
     }
 
     private initPopulation() {
-        const directions = [Direction.Up, Direction.Down, Direction.Left, Direction.Right,
-        Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight];
 
         for (let i = 0; i < this.populationSize; i++) {
             this.population[i] = new Chromosome(this.genesCount);
             for (let j = 0; j < this.genesCount; j++) {
-                this.population[i].genes[j] = directions[Math.floor(Math.random() * directions.length)];
+                this.population[i].setRandomGeneAt(j);
             }
         }
     }
@@ -66,53 +64,62 @@ export class EvolutionSimulator {
 
     private applyFitnessFunction() {
 
-        let orderedPopulation = new Array<Chromosome>(this.populationSize);
-
         this.population.forEach(chromosome => {
             let score = 0;
 
             // Conjunto de espaços visitados
             let traveledSpaces = new Set<Coordinate>();
 
-            // Guarda a posição do indivíduo no mapa
+            // Representa a posição do cromosomo no mapa
             let pos = this.labyrinth!.entry;
 
-            traveledSpaces.add(pos);
+            traveledSpaces.add({ x: pos.x, y: pos.y });
 
             for (let i = 0; i < chromosome.genes.length; i++) {
                 const gene = chromosome.genes[i];
-                
+
                 switch (gene) {
-                    case Direction.Up: 
-                        pos.y += 1;
-                    case Direction.Down:
+                    case Direction.Up:
                         pos.y -= 1;
+                        break;
+                    case Direction.Down:
+                        pos.y += 1;
+                        break;
                     case Direction.Left:
                         pos.x -= 1;
+                        break;
                     case Direction.Right:
                         pos.x += 1;
+                        break;
                     case Direction.UpLeft:
-                        pos.y += 1;
+                        pos.y -= 1;
                         pos.x -= 1;
+                        break;
                     case Direction.UpRight:
+                        pos.y -= 1;
+                        pos.x += 1;
+                        break;
+                    case Direction.DownLeft:
+                        pos.y += 1;
+                        pos.x -= 1;
+                        break;
+                    case Direction.DownRight:
                         pos.y += 1;
                         pos.x += 1;
-                    case Direction.DownLeft:
-                        pos.y -= 1;
-                        pos.x -= 1;
-                    case Direction.DownRight:
-                        pos.y -= 1;
-                        pos.x += 1;
+                        break;
                 }
 
                 // Caso esteja passando pelo mesmo lugar de novo é penalizado
-                if (traveledSpaces.has(pos)) score -= 6;
+                if (traveledSpaces.has(pos))
+                    score -= 6;
+
+                // Caso esteja acessando uma posição fora do mapa
+                else if (pos.y < 0 || pos.y > this.labyrinth!.map.length-1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length-1)
+                    score -= 6;
 
                 // Caso esteja atravessando uma parede (1) é penalizado
-                else if (this.labyrinth!.map[pos.y][pos.x] == 1) score -= 3;
-                
-                // Caso esteja acessando uma posição fora do mapa
-                else if (pos.y < 0 || pos.y > this.labyrinth!.map.length || pos.x < 0 || pos.x > this.labyrinth!.map[0].length) score -= 6;
+                else if (this.labyrinth!.map[pos.y][pos.x] == 1)
+                    score -= 3;
 
                 // Caso esteja passando por um chão
                 else if (this.labyrinth!.map[pos.y][pos.x] == 0) {
@@ -122,18 +129,19 @@ export class EvolutionSimulator {
                         score += 20;
                     }
                 }
-                chromosome.score = score;
-                orderedPopulation.push(chromosome);
+
+                // Adiciona a nova posição ao conjunto de visitados
+                traveledSpaces.add({ x: pos.x, y: pos.y });
             }
-
-            // Ordena a população pelo score
-            orderedPopulation = orderedPopulation.sort((a, b) => {
-                return b.score - a.score;
-            });
-
-            console.log(orderedPopulation.map(chromosome => "Score: " + chromosome.score));
-
+            chromosome.score = score;
         });
+
+        // Ordena a população pelo score
+        this.population = this.population.sort((a, b) => {
+            return b.score - a.score;
+        });
+
+        console.log(this.population.map(chromosome => "Score: " + chromosome.score));
 
     }
 }
