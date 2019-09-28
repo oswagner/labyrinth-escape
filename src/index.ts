@@ -4,7 +4,8 @@ import { EvolutionSimulator } from "./evolution-simulator";
 let lab = LabyrinthLoader.load("./data/labirinto2_10.txt");
 
 console.log(lab);
+lab.printMap();
 
-let sim = new EvolutionSimulator(2, 0.1, lab, 4);
-sim.run();
+// let sim = new EvolutionSimulator(2, 0.1, lab, 4);
+// sim.run();
 

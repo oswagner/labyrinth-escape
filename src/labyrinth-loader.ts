@@ -1,16 +1,5 @@
+import { Labyrinth, Coordinate } from "./labyrinth";
 import * as fs from "fs";
-
-export interface Coordinate {
-    x: number;
-    y: number;
-}
-
-export interface Labyrinth {
-    map: number[][];
-    entry: Coordinate;
-    exit: Coordinate;
-    floorSpaces: number;
-}
 
 export class LabyrinthLoader {
 
@@ -58,7 +47,7 @@ export class LabyrinthLoader {
             y++;
         });
 
-        let lab: Labyrinth = { map, entry, exit, floorSpaces };
+        let lab = new Labyrinth(map, entry, exit, floorSpaces);
         return lab;
     }
 

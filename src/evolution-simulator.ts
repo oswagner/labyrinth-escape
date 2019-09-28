@@ -1,4 +1,4 @@
-import { Labyrinth, Coordinate } from "./labyrinth-loader";
+import { Labyrinth, Coordinate } from "./labyrinth";
 import { Chromosome, Direction } from "./chromosome";
 
 export class EvolutionSimulator {
@@ -75,7 +75,6 @@ export class EvolutionSimulator {
 
             for (let i = 0; i < chromosome.genes.length; i++) {
                 const gene = chromosome.genes[i];
-
                 switch (gene) {
                     case Direction.Up:
                         pos.y -= 1;
