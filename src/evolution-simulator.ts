@@ -42,12 +42,10 @@ export class EvolutionSimulator {
             this.step();
             this.currentGeneration++;
         }
-
     }
 
     step() {
         this.applyFitnessFunction();
-
     }
 
     private isDone(): boolean {
@@ -71,7 +69,7 @@ export class EvolutionSimulator {
             let traveledSpaces = new Set<Coordinate>();
 
             // Representa a posição do cromosomo no mapa
-            let pos = this.labyrinth!.entry;
+            let pos = {x: this.labyrinth!.entry.x, y: this.labyrinth!.entry.y};
 
             traveledSpaces.add({ x: pos.x, y: pos.y });
 
