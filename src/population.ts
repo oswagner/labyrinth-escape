@@ -2,43 +2,32 @@ import { Chromosome, Direction } from "./chromosome";
 
 export class Population {
 
-  private _generationsLimit?: number;
-  private _mutationChance: number = 0.5;
-  private _currentGeneration: number = 0;
+  private _mutationChance: number = 0.2;
   private _genesPerChromosome: number = 0;
   private _numberOfElitist?: number;
   private _population: Chromosome[];
   private _populationSize: number;
-  private _populationHistory: Population[] = [];
 
   /**
      * Construtor da classe PopulaÃ§Ã£o
      * @param populationSize 
-     * @param generationsLimit 
      * @param mutationChance
      * @param genesPerChromosome
      * 
      */
   constructor(
     populationSize: number,
-    generationsLimit: number,
     mutationChance: number,
     genesPerChromosome: number,
     numberOfElitist: number = 1,
   ) {
     this._populationSize = populationSize;
-    this._generationsLimit = generationsLimit;
     this._mutationChance = mutationChance;
     this._genesPerChromosome = genesPerChromosome
     this._numberOfElitist = numberOfElitist;
 
     this._population = [];
     this.initPopulation()
-    this._populationHistory.push(this)
-  }
-
-  public get populationHistory(): Population[] {
-    return this._populationHistory;
   }
 
   public get currentPopulation(): Chromosome[] {
@@ -63,29 +52,28 @@ export class Population {
    * nextGeneration
    */
   public nextGeneration() {
-    // TODO: Não faz sentido intermediaria, vamos jogar pra next
-    let intermediaryGeneration: Chromosome[] = [];
     let nextGeneration: Chromosome[] = [];
     const eliteChromosomes = this.elitismSelection();
 
-    nextGeneration.concat(eliteChromosomes);
+    nextGeneration = [...nextGeneration, ...eliteChromosomes]
 
-    while (intermediaryGeneration.length < this._population.length) {
-      // TODO: chamar tournamentSelection 2x para pegar mãe e pai
-      // TODO: Fazer crossover após vitoria no torneio
-      // TODO: joga os filhos pra próxima geração
-      intermediaryGeneration.push(this.tournamentSelection())
+    while (nextGeneration.length < this._population.length) {
+      const father = this.tournamentSelection()
+      const mother = this.tournamentSelection()
+      const childrens = this.crossover(father, mother)
+
+      if (this._mutationChance >= Number(Math.random().toPrecision(1))) {
+        this.mutateChildren(childrens[this.getRandomIndex(childrens)])
+      }
+      nextGeneration = [...nextGeneration, ...childrens]
     }
-
-
-    // TODO: mutation
-
+    this._population = nextGeneration;
   }
 
   /**
    * Selecione 3 cromossomos de forma aleatória
    * e escolhe aquele que possuí o melhor score 
-   * para ser adiciona na população intermediária
+   * para ser levado para o cruzamento
    */
   private tournamentSelection(): Chromosome {
     let elegibleChromosome: Chromosome[] = []
@@ -109,22 +97,37 @@ export class Population {
       .slice(0, this._numberOfElitist)
   }
 
-
-  private crossover(intermediaryGeneration: Chromosome[]): Chromosome[] {
-    const father = intermediaryGeneration[this.getRandomIndex(intermediaryGeneration)]
-    const mother = intermediaryGeneration[this.getRandomIndex(intermediaryGeneration)]
-
+  /**
+   * Processo de cruzamento genético utilizado para gerar a nova geração da população
+   * O modelo escolhido foi o modelo uniponto
+   * @param father 
+   * @param mother 
+   */
+  private crossover(father: Chromosome, mother: Chromosome): Chromosome[] {
     const midFather = father.genes.length / 2;
     const midMother = mother.genes.length / 2;
 
-    const firstSonFather = father.genes.slice(0, midFather)
-    const firstSonMother = mother.genes.slice(midMother, mother.genes.length);
+    const sonFromMother = mother.genes.slice(0, midMother);
+    const sonFromFather = father.genes.slice(midFather, father.genes.length)
 
-    const son: Direction[] = [...firstSonFather, ...firstSonMother]
+    const sonDirections: Direction[] = [...sonFromMother, ...sonFromFather]
+    const son = new Chromosome(sonDirections.length);
+    son.genes = sonDirections
+
+    const daughterFromFather = father.genes.slice(0, midFather)
+    const daughterFromMother = mother.genes.slice(midMother, mother.genes.length);
+
+    const daughterDirections: Direction[] = [...daughterFromFather, ...daughterFromMother]
+    const daughter = new Chromosome(daughterDirections.length);
+    daughter.genes = daughterDirections
 
 
+    return [son, daughter]
+  }
 
-    return []
+  private mutateChildren(chromosome: Chromosome): Chromosome {
+    chromosome.setRandomGeneAt(this.getRandomIndex(chromosome.genes))
+    return chromosome;
   }
 
 }

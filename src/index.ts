@@ -1,11 +1,11 @@
 import { LabyrinthLoader } from "./labyrinth-loader";
 import { EvolutionSimulator } from "./evolution-simulator";
+import { Population } from "./population";
 
 let lab = LabyrinthLoader.load("./data/labirinto2_10.txt");
 
-console.log(lab);
-lab.printMap();
+const population = new Population(200, 0.3, lab.floorSpaces, 2)
 
-// let sim = new EvolutionSimulator(2, 0.1, lab, 4);
-// sim.run();
+let sim = new EvolutionSimulator(population, lab, 10);
+sim.run();
 

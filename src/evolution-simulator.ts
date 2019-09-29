@@ -1,51 +1,41 @@
 import { Labyrinth, Coordinate } from "./labyrinth";
 import { Chromosome, Direction } from "./chromosome";
+import { Population } from "./population";
 
 export class EvolutionSimulator {
 
     // Parâmetros de entrada para a simulação
-    private populationSize: number = 0;
-    private mutationChance: number = 0.5;
     private labyrinth?: Labyrinth;
     private generationsLimit?: number;
     private stopsWhenConverging: boolean = false;
 
-    private population: Chromosome[] = [];
-    private genesCount: number = 0;
     private currentGeneration: number = 0;
     private foundSolution = false;
 
-    constructor(initialPopulation: number, mutationChance: number, labyrinth: Labyrinth, generationsLimit?: number, stopsWhenConverging: boolean = true) {
-        this.populationSize = initialPopulation;
-        this.mutationChance = mutationChance;
+
+    private population: Population;
+
+
+
+    constructor(
+        population: Population,
+        labyrinth: Labyrinth,
+        generationsLimit?: number,
+        stopsWhenConverging: boolean = true
+    ) {
         this.generationsLimit = generationsLimit;
         this.stopsWhenConverging = stopsWhenConverging;
-
-        this.genesCount = labyrinth.floorSpaces;
         this.labyrinth = labyrinth;
-
-        this.initPopulation();
-    }
-
-    private initPopulation() {
-
-        for (let i = 0; i < this.populationSize; i++) {
-            this.population[i] = new Chromosome(this.genesCount);
-            for (let j = 0; j < this.genesCount; j++) {
-                this.population[i].setRandomGeneAt(j);
-            }
-        }
+        this.population = population;
     }
 
     run() {
         while (!this.isDone()) {
-            this.step();
+            console.log(`População ${this.currentGeneration}`);
+            this.applyFitnessFunction();
+            this.population.nextGeneration()
             this.currentGeneration++;
         }
-    }
-
-    step() {
-        this.applyFitnessFunction();
     }
 
     private isDone(): boolean {
@@ -62,14 +52,14 @@ export class EvolutionSimulator {
 
     private applyFitnessFunction() {
 
-        this.population.forEach(chromosome => {
+        this.population.currentPopulation.forEach(chromosome => {
             let score = 0;
 
             // Conjunto de espaços visitados
             let traveledSpaces = new Set<Coordinate>();
 
             // Representa a posição do cromosomo no mapa
-            let pos = {x: this.labyrinth!.entry.x, y: this.labyrinth!.entry.y};
+            let pos = { x: this.labyrinth!.entry.x, y: this.labyrinth!.entry.y };
 
             traveledSpaces.add({ x: pos.x, y: pos.y });
 
@@ -111,7 +101,7 @@ export class EvolutionSimulator {
                     score -= 6;
 
                 // Caso esteja acessando uma posição fora do mapa
-                else if (pos.y < 0 || pos.y > this.labyrinth!.map.length-1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length-1)
+                else if (pos.y < 0 || pos.y > this.labyrinth!.map.length - 1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length - 1)
                     score -= 6;
 
                 // Caso esteja atravessando uma parede (1) é penalizado
@@ -123,7 +113,7 @@ export class EvolutionSimulator {
                     score += 10;
                     // Caso esse chão seja a saída
                     if (pos.x == this.labyrinth!.exit.x && pos.y == this.labyrinth!.exit.y) {
-                        score += 20;
+                        score += 100;
                     }
                 }
 
@@ -133,12 +123,7 @@ export class EvolutionSimulator {
             chromosome.score = score;
         });
 
-        // Ordena a população pelo score
-        this.population = this.population.sort((a, b) => {
-            return b.score - a.score;
-        });
-
-        console.log(this.population.map(chromosome => "Score: " + chromosome.score));
+        console.log(this.population.currentPopulation.map(chromosome => "Score: " + chromosome.score));
 
     }
 }
