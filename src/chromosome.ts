@@ -1,3 +1,5 @@
+import { Coordinate } from "./labyrinth";
+
 export enum Direction {
     Up = "↑",
     Down = "↓",
@@ -13,6 +15,7 @@ export class Chromosome {
 
     public genes: Direction[];
     public score: number = 0;
+    public possibleSolution?: Coordinate[];
     private static directions = [Direction.Up, Direction.Down, Direction.Left, Direction.Right,
         Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight];
 

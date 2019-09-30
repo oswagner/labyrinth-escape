@@ -58,10 +58,14 @@ export class EvolutionSimulator {
             // Conjunto de espaços visitados
             let traveledSpaces = new Set<Coordinate>();
 
+            // Array que representa um potencial caminho à saída
+            let possibleSolution: Coordinate[] = [];
+
             // Representa a posição do cromosomo no mapa
             let pos = { x: this.labyrinth!.entry.x, y: this.labyrinth!.entry.y };
 
             traveledSpaces.add({ x: pos.x, y: pos.y });
+            possibleSolution.push({ x: pos.x, y: pos.y })
 
             for (let i = 0; i < chromosome.genes.length; i++) {
                 const gene = chromosome.genes[i];
@@ -98,32 +102,42 @@ export class EvolutionSimulator {
 
                 // Caso esteja passando pelo mesmo lugar de novo é penalizado
                 if (traveledSpaces.has(pos))
-                    score -= 6;
+                    score -= 10;
 
                 // Caso esteja acessando uma posição fora do mapa
                 else if (pos.y < 0 || pos.y > this.labyrinth!.map.length - 1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length - 1)
-                    score -= 6;
+                    score -= 100;
 
                 // Caso esteja atravessando uma parede (1) é penalizado
                 else if (this.labyrinth!.map[pos.y][pos.x] == 1)
-                    score -= 3;
+                    score -= 50;
 
                 // Caso esteja passando por um chão
                 else if (this.labyrinth!.map[pos.y][pos.x] == 0) {
-                    score += 10;
+                    score += 20;
                     // Caso esse chão seja a saída
                     if (pos.x == this.labyrinth!.exit.x && pos.y == this.labyrinth!.exit.y) {
-                        score += 100;
+                        score += 200;
+                        if (chromosome.possibleSolution == null) {
+                            possibleSolution.push({x: pos.x, y: pos.y});
+                            chromosome.possibleSolution = Array.from(possibleSolution);
+                        }
                     }
                 }
 
                 // Adiciona a nova posição ao conjunto de visitados
                 traveledSpaces.add({ x: pos.x, y: pos.y });
+                possibleSolution.push({ x: pos.x, y: pos.y });
             }
             chromosome.score = score;
         });
 
-        console.log(this.population.currentPopulation.map(chromosome => "Score: " + chromosome.score));
-
+        let best: Chromosome = this.population.currentPopulation.sort((a, b) => b.score - a.score)[0];
+        let genesString = "";
+        best.genes.forEach(d => genesString += d + " ");
+        console.log("Best score: " + best.score);
+        console.log("Genes: " + genesString);
+        if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
+        console.log();
     }
 }
