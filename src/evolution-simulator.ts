@@ -124,7 +124,7 @@ export class EvolutionSimulator {
 
                     // Caso esteja atravessando uma parede (1) é penalizado
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 1) {
-                    score -= 10;
+                    score -= 100;
                     hasHitWalls = true;
                     chromosome.path += chalk.yellow(" (" + pos.x + ", " + pos.y + ")");
 
