@@ -34,7 +34,6 @@ export class EvolutionSimulator {
 
     run() {
         while (!this.isDone()) {
-            console.log(`População ${this.currentGeneration}`);
             this.applyFitnessFunction();
             this.population.nextGeneration()
             this.currentGeneration++;
@@ -125,13 +124,13 @@ export class EvolutionSimulator {
                     hasLeftMap = true;
                     chromosome.path += chalk.gray(" (" + pos.x + ", " + pos.y + ")");
 
-                // Caso esteja atravessando uma parede (1) é penalizado
+                    // Caso esteja atravessando uma parede (1) é penalizado
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 1) {
                     score -= 10;
                     hasHitWalls = true;
                     chromosome.path += chalk.yellow(" (" + pos.x + ", " + pos.y + ")");
 
-                // Caso esteja passando por um chão
+                    // Caso esteja passando por um chão
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 0) {
                     score += 100;
                     // Caso esse chão seja a saída
@@ -140,7 +139,7 @@ export class EvolutionSimulator {
                         // Só pontua caso seja a primeira vez que está passando pela saída
                         if (chromosome.possibleSolution == null) {
                             score += 1000;
-                            possibleSolution.push({x: pos.x, y: pos.y});
+                            possibleSolution.push({ x: pos.x, y: pos.y });
                             chromosome.possibleSolution = Array.from(possibleSolution);
                             if (!hasHitWalls && !hasLeftMap) {
                                 this.solution = Array.from(possibleSolution);
@@ -159,13 +158,17 @@ export class EvolutionSimulator {
             chromosome.score = score;
         });
 
-        let best: Chromosome = this.population.currentPopulation.sort((a, b) => b.score - a.score)[0];
-        let genesString = "";
-        best.genes.forEach(d => genesString += d + " ");
-        console.log("Melhor pontuação: " + best.score);
-        console.log("Genes: " + genesString);
-        console.log("Caminho realizado:" + best.path);
-        if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
-        console.log();
+        if (this.currentGeneration % this.printInterval == 0) {
+
+            let best: Chromosome = this.population.currentPopulation.sort((a, b) => b.score - a.score)[0];
+            let genesString = "";
+            best.genes.forEach(d => genesString += d + " ");
+            console.log(`Geração ${this.currentGeneration}`);
+            console.log("Melhor pontuação: " + best.score);
+            console.log("Genes: " + genesString);
+            console.log("Caminho realizado:" + best.path);
+            if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
+            console.log();
+        }
     }
 }

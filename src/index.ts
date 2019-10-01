@@ -21,8 +21,11 @@ let eliteCount = input == null ? 1 : input;
 input = UserInterface.askNumber("Qual o limite de gerações? (0 se não houver limite)", true, 0);
 let generationsLimit = input == null || input == 0 ? undefined : input;
 
+input = UserInterface.askNumber("De quantas em quantas gerações deve-se mostrar o resultado?", true, 1);
+let printInterval = input == null ? 10 : input;
+
 const population = new Population(initialPopulation, mutationChance, lab.floorSpaces, eliteCount);
 
-let sim = new EvolutionSimulator(population, lab, generationsLimit);
+let sim = new EvolutionSimulator(population, lab, printInterval, generationsLimit);
 sim.run();
 
