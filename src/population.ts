@@ -53,20 +53,14 @@ export class Population {
    * nextGeneration
    */
   public nextGeneration() {
-    let intermediaryGeneration: Chromosome[] = [];
     let nextGeneration: Chromosome[] = [];
     const eliteChromosomes = this.elitismSelection();
 
     nextGeneration = [...nextGeneration, ...eliteChromosomes]
 
-    while (intermediaryGeneration.length < this._population.length) {
-      const winnerTournament = this.tournamentSelection()
-      intermediaryGeneration = [...intermediaryGeneration, winnerTournament]
-    }
-
     while (nextGeneration.length < this._population.length) {
-      const father = intermediaryGeneration[this.getRandomIndex(intermediaryGeneration)]
-      const mother = intermediaryGeneration[this.getRandomIndex(intermediaryGeneration)]
+      const father = this.tournamentSelection()
+      const mother = this.tournamentSelection()
       const childrens = this.crossover(father, mother)
 
       if (this._mutationChance >= Number(Math.random().toPrecision(1))) {
