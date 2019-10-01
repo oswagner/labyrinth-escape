@@ -2,24 +2,26 @@ import { Labyrinth, Coordinate } from "./labyrinth";
 import { Chromosome, Direction } from "./chromosome";
 import { Population } from "./population";
 
+const chalk = require('chalk');
+
 export class EvolutionSimulator {
 
     // Parâmetros de entrada para a simulação
     private labyrinth?: Labyrinth;
     private generationsLimit?: number;
     private stopsWhenConverging: boolean = false;
+    // Intervalo de gerações para logar na tela as informações atuais
+    private printInterval: number = 1;
 
     private currentGeneration: number = 0;
     private solution: Coordinate[] = [];
 
-
     private population: Population;
-
-
 
     constructor(
         population: Population,
         labyrinth: Labyrinth,
+        printInterval: number = 1,
         generationsLimit?: number,
         stopsWhenConverging: boolean = true
     ) {
@@ -27,6 +29,7 @@ export class EvolutionSimulator {
         this.stopsWhenConverging = stopsWhenConverging;
         this.labyrinth = labyrinth;
         this.population = population;
+        this.printInterval = printInterval;
     }
 
     run() {
@@ -118,33 +121,40 @@ export class EvolutionSimulator {
 
                 // Caso esteja acessando uma posição fora do mapa
                 if (pos.y < 0 || pos.y > this.labyrinth!.map.length - 1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length - 1) {
-                    score -= 10;
+                    score -= 1000;
                     hasLeftMap = true;
+                    chromosome.path += chalk.gray(" (" + pos.x + ", " + pos.y + ")");
 
                 // Caso esteja atravessando uma parede (1) é penalizado
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 1) {
-                    score -= 3;
+                    score -= 10;
                     hasHitWalls = true;
+                    chromosome.path += chalk.yellow(" (" + pos.x + ", " + pos.y + ")");
 
                 // Caso esteja passando por um chão
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 0) {
-                    score += 2;
+                    score += 100;
                     // Caso esse chão seja a saída
                     if (pos.x == this.labyrinth!.exit.x && pos.y == this.labyrinth!.exit.y) {
-                        score += 10;
+                        chromosome.path += chalk.red(" (" + pos.x + ", " + pos.y + ")");
+                        // Só pontua caso seja a primeira vez que está passando pela saída
                         if (chromosome.possibleSolution == null) {
+                            score += 1000;
                             possibleSolution.push({x: pos.x, y: pos.y});
                             chromosome.possibleSolution = Array.from(possibleSolution);
                             if (!hasHitWalls && !hasLeftMap) {
-
+                                this.solution = Array.from(possibleSolution);
                             }
                         }
+                    } else {
+                        chromosome.path += chalk.blue(" (" + pos.x + ", " + pos.y + ")");
                     }
                 }
 
                 // Adiciona a nova posição ao conjunto de visitados
                 traveledSpaces.add({ x: pos.x, y: pos.y });
                 possibleSolution.push({ x: pos.x, y: pos.y });
+
             }
             chromosome.score = score;
         });
@@ -154,6 +164,7 @@ export class EvolutionSimulator {
         best.genes.forEach(d => genesString += d + " ");
         console.log("Melhor pontuação: " + best.score);
         console.log("Genes: " + genesString);
+        console.log("Caminho realizado:" + best.path);
         if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
         console.log();
     }

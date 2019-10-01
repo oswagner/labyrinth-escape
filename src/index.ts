@@ -3,7 +3,7 @@ import { EvolutionSimulator } from "./evolution-simulator";
 import { Population } from "./population";
 import { UserInterface } from "./user-interface";
 
-let lab = LabyrinthLoader.load("./data/labirinto3_20.txt");
+let lab = LabyrinthLoader.load("./data/labirinto2_10.txt");
 
 lab.printMap();
 
