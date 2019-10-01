@@ -52,11 +52,8 @@ export class EvolutionSimulator {
     private isDone(): boolean {
         let result: boolean = this.solution.length > 0;
 
-        if (this.generationsLimit != null)
+        if (this.generationsLimit != null && !result)
             result = this.currentGeneration > this.generationsLimit;
-
-        // if (this.stopsWhenConverging)
-        //     result = result
 
         return result;
     }
@@ -64,6 +61,7 @@ export class EvolutionSimulator {
     private applyFitnessFunction() {
 
         this.population.currentPopulation.forEach(chromosome => {
+            chromosome.path = "";
             let score = 0;
 
             let hasHitWalls = false;

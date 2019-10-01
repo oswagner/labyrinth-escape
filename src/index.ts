@@ -3,14 +3,14 @@ import { EvolutionSimulator } from "./evolution-simulator";
 import { Population } from "./population";
 import { UserInterface } from "./user-interface";
 
-let lab = LabyrinthLoader.load("./data/labirinto2_10.txt");
+let lab = LabyrinthLoader.load("./data/labirinto1_10.txt");
 
 lab.printMap();
 
 let input;
 
 input = UserInterface.askNumber("Qual o tamanho da população inicial?", true);
-let initialPopulation = input == null ? 200 : input; 
+let initialPopulation = input == null ? 200 : input;
 
 input = UserInterface.askNumber("Qual a chance de mutação?", true, 0, 1);
 let mutationChance = input == null ? 0.5 : input;

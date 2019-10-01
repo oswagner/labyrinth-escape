@@ -63,7 +63,7 @@ export class Population {
       const mother = this.tournamentSelection()
       const childrens = this.crossover(father, mother)
 
-      if (this._mutationChance >= Number(Math.random().toPrecision(1))) {
+      if (this._mutationChance >= Number(Math.random().toPrecision(2))) {
         this.mutateChildren(childrens[this.getRandomIndex(childrens)])
       }
       nextGeneration = [...nextGeneration, ...childrens]
@@ -93,9 +93,17 @@ export class Population {
    * porém podemos aumentar o número do cromossomos elitistas
    */
   private elitismSelection(): Chromosome[] {
-    return this._population
+    const elites = this._population
+      .filter((chromosome) => (chromosome.possibleSolution != null))
       .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
-      .slice(0, this._numberOfElitist)
+      .slice(0, this._numberOfElitist);
+
+    return elites.length == 0 ?
+      this._population
+        .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
+        .slice(0, this._numberOfElitist)
+      :
+      elites
   }
 
   /**
