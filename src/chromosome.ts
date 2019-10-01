@@ -29,4 +29,18 @@ export class Chromosome {
             this.genes[index] = Chromosome.directions[Math.floor(Math.random() * Chromosome.directions.length)];
     }
 
+    public toString(): string {
+
+        let result = "Aptidão: " + this.score + "/nGenes:";
+        this.genes.forEach(g => result += " " + g);
+        result += "Caminho encontrado:";
+
+        if (this.possibleSolution != null)
+            this.possibleSolution!.forEach(coord => " (" + coord.x + ", " + coord.y + ")");
+        else
+            result += " Nenhum";
+        
+        return result;
+    }
+
 }
