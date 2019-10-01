@@ -111,18 +111,18 @@ export class Population {
    * @param mother 
    */
   private crossover(father: Chromosome, mother: Chromosome): Chromosome[] {
-    const midFather = father.genes.length / 2;
-    const midMother = mother.genes.length / 2;
 
-    const sonFromMother = mother.genes.slice(0, midMother);
-    const sonFromFather = father.genes.slice(midFather, father.genes.length)
+    const cutPoint = this.getRandomIndex(father.genes) // mother's and father's size are equal
+
+    const sonFromMother = mother.genes.slice(0, cutPoint);
+    const sonFromFather = father.genes.slice(cutPoint, father.genes.length)
 
     const sonDirections: Direction[] = [...sonFromMother, ...sonFromFather]
     const son = new Chromosome(sonDirections.length);
     son.genes = sonDirections
 
-    const daughterFromFather = father.genes.slice(0, midFather)
-    const daughterFromMother = mother.genes.slice(midMother, mother.genes.length);
+    const daughterFromFather = father.genes.slice(0, cutPoint)
+    const daughterFromMother = mother.genes.slice(cutPoint, mother.genes.length);
 
     const daughterDirections: Direction[] = [...daughterFromFather, ...daughterFromMother]
     const daughter = new Chromosome(daughterDirections.length);
