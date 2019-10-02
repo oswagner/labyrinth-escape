@@ -114,7 +114,7 @@ export class EvolutionSimulator {
 
                 // Caso esteja passando pelo mesmo lugar de novo é penalizado
                 if (traveledSpaces.has(pos))
-                    score -= 1;
+                    score -= 50;
 
                 // Caso esteja acessando uma posição fora do mapa
                 if (pos.y < 0 || pos.y > this.labyrinth!.map.length - 1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length - 1) {
