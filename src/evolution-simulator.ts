@@ -2,7 +2,10 @@ import { Labyrinth, Coordinate } from "./labyrinth";
 import { Chromosome, Direction } from "./chromosome";
 import { Population } from "./population";
 
+const fse = require('fs-extra');
 const chalk = require('chalk');
+
+let logString = '';
 
 export class EvolutionSimulator {
 
@@ -36,8 +39,17 @@ export class EvolutionSimulator {
         while (!this.isDone()) {
             this.applyFitnessFunction();
             this.population.nextGeneration()
+            logString += `======================================\n`
             this.currentGeneration++;
         }
+
+
+        fse.outputFile('../log/log.txt', logString, function (err: Error) {
+            if (err) {
+                return console.error(err);
+            }
+            console.log("File created!");
+        });
 
         console.log("Fim de Execução\n")
 
@@ -114,7 +126,7 @@ export class EvolutionSimulator {
 
                 // Caso esteja passando pelo mesmo lugar de novo é penalizado
                 if (traveledSpaces.has(pos))
-                    score -= 50;
+                    score -= 300;
 
                 // Caso esteja acessando uma posição fora do mapa
                 if (pos.y < 0 || pos.y > this.labyrinth!.map.length - 1 || pos.x < 0 || pos.x > this.labyrinth!.map[0].length - 1) {
@@ -124,7 +136,7 @@ export class EvolutionSimulator {
 
                     // Caso esteja atravessando uma parede (1) é penalizado
                 } else if (this.labyrinth!.map[pos.y][pos.x] == 1) {
-                    score -= 100;
+                    score -= 800;
                     hasHitWalls = true;
                     chromosome.path += chalk.yellow(" (" + pos.x + ", " + pos.y + ")");
 
@@ -136,7 +148,7 @@ export class EvolutionSimulator {
                         chromosome.path += chalk.red(" (" + pos.x + ", " + pos.y + ")");
                         // Só pontua caso seja a primeira vez que está passando pela saída
                         if (chromosome.possibleSolution == null) {
-                            score += 1000;
+                            score += 10000;
                             possibleSolution.push({ x: pos.x, y: pos.y });
                             chromosome.possibleSolution = Array.from(possibleSolution);
                             if (!hasHitWalls && !hasLeftMap) {
@@ -161,12 +173,14 @@ export class EvolutionSimulator {
             let best: Chromosome = this.population.currentPopulation.sort((a, b) => b.score - a.score)[0];
             let genesString = "";
             best.genes.forEach(d => genesString += d + " ");
-            console.log(`Geração ${this.currentGeneration}`);
-            console.log("Melhor pontuação: " + best.score);
-            console.log("Genes: " + genesString);
-            console.log("Caminho realizado:" + best.path);
-            if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
+            logString += `Geração ${this.currentGeneration}\n`
+            logString += `Melhor pontuação: ${best.score}\n`
+            logString += `Genes: ${genesString}\n`
+            logString += `Caminho realizado: ${best.path}\n`
+            console.log(logString)
+            // if (best.possibleSolution != null) this.labyrinth!.printMap(best.possibleSolution);
             console.log();
         }
     }
+
 }

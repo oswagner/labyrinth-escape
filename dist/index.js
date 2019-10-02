@@ -4,7 +4,7 @@ const labyrinth_loader_1 = require("./labyrinth-loader");
 const evolution_simulator_1 = require("./evolution-simulator");
 const population_1 = require("./population");
 const user_interface_1 = require("./user-interface");
-let lab = labyrinth_loader_1.LabyrinthLoader.load("./data/labirinto1_10.txt");
+let lab = labyrinth_loader_1.LabyrinthLoader.load("./data/teste_labirinto1_10.txt");
 lab.printMap();
 let input;
 input = user_interface_1.UserInterface.askNumber("Qual o tamanho da população inicial?", true);

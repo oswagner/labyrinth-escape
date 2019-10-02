@@ -95,13 +95,17 @@ export class Population {
   private elitismSelection(): Chromosome[] {
     const elites = this._population
       .filter((chromosome) => (chromosome.possibleSolution != null))
-
-
-    const bestScore = this._population
       .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
-      .slice(0, this._numberOfElitist)
+      .slice(0, this._numberOfElitist);
 
-    return [...elites, ...bestScore];
+
+    if (elites.length > 0) {
+      return elites
+    } else {
+      return this._population
+        .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
+        .slice(0, this._numberOfElitist);
+    }
   }
 
   /**
@@ -133,7 +137,11 @@ export class Population {
   }
 
   private mutateChildren(chromosome: Chromosome): Chromosome {
-    chromosome.setRandomGeneAt(this.getRandomIndex(chromosome.genes))
+
+    for (let index = 0; index < (0.5 * chromosome.genes.length); index++) {
+      chromosome.setRandomGeneAt(this.getRandomIndex(chromosome.genes))
+    }
+
     return chromosome;
   }
 
