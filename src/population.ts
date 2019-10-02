@@ -93,20 +93,15 @@ export class Population {
    * porém podemos aumentar o número do cromossomos elitistas
    */
   private elitismSelection(): Chromosome[] {
-    let elitesWithFinalPath = this._population
+    const elites = this._population
       .filter((chromosome) => (chromosome.possibleSolution != null))
 
-    if (elitesWithFinalPath.length >= 0) {
-      elitesWithFinalPath.slice(0, this._numberOfElitist);
-    }
 
-    if (elitesWithFinalPath != null && elitesWithFinalPath.length > 0) {
-      return elitesWithFinalPath;
-    } else {
-      return this._population
-        .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
-        .slice(0, this._numberOfElitist)
-    }
+    const bestScore = this._population
+      .sort((chromosomeA, chromosomeB) => (chromosomeB.score - chromosomeA.score))
+      .slice(0, this._numberOfElitist)
+
+    return [...elites, ...bestScore];
   }
 
   /**
